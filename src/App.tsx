@@ -21,17 +21,17 @@ export default function App() {
     useEffect(() => {
         if (isFetched.current) return;
         isFetched.current = true;
-        fetchTotalCount();
     
         getConfig().then((url) => {
             setApiUrl(url);
+            fetchTotalCount(url);
         });
     }, []);
     
 
-    const fetchTotalCount = async () => {
+    const fetchTotalCount = async (url) => {
         try {
-            const response = await fetch(`${apiUrl}/total`, {
+            const response = await fetch(`${url}/total`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -249,7 +249,7 @@ export default function App() {
 }
 
 async function getConfig() {
-    const response = await fetch("../public/config.json");
+    const response = await fetch("/config.json");
     const config = await response.json();
     return config.API_URL;
 }
