@@ -31,7 +31,7 @@ export default function App() {
 
     const fetchTotalCount = async (url) => {
         try {
-            const response = await fetch(`${url}/total`, {
+            const response = await fetch(`${url}/total/`, {
                 method: "GET",
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
@@ -102,7 +102,7 @@ export default function App() {
     
         try {
             const response = await fetch(
-                `${apiUrl}/${encodeURIComponent(trimmedAnswer)}/${encodeURIComponent(trimmedInput)}`,
+                `${apiUrl}/${encodeURIComponent(trimmedAnswer)}/${encodeURIComponent(trimmedInput)}/`,
                 {
                     method: "GET",
                     headers: { "Content-Type": "application/json" },
