@@ -141,10 +141,12 @@ export default function App() {
     
             // 정답과의 유사도가 100%이면 정답 처리
             if (data.similarity_percentage === 100) {
+                const nowAnswerCount = resultArr.length + 1;
+
                 setIsCorrect(true);
-                setAnswerCount(resultArr.length);
+                setAnswerCount(nowAnswerCount);
                 localStorage.setItem("isCorrect", "true");
-                localStorage.setItem("answerCount", resultArr.length.toString());
+                localStorage.setItem("answerCount", nowAnswerCount.toString());
             }
     
             // 결과 배열에 추가할 새로운 결과 생성
