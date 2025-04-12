@@ -17,9 +17,9 @@ export default function Table({ resultArr }: TableProps) {
                 <thead>
                     <tr>
                         <th style={{ width: "10%" }}>#</th>
-                        <th style={{ width: "60%" }}>단어</th>
-                        <th style={{ width: "15%" }}>유사도</th>
-                        <th style={{ width: "15%" }}>순위</th>
+                        <th style={{ width: "50%" }}>단어</th>
+                        <th style={{ width: "20%" }}>유사도</th>
+                        <th style={{ width: "20%" }}>순위</th>
                     </tr>
                 </thead>
                 <tbody>
