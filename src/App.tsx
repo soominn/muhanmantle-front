@@ -28,6 +28,12 @@ export default function App() {
 
     // 컴포넌트가 마운트될 때 API 설정 및 전체 단어 수를 불러옴
     useEffect(() => {
+        const shouldForceReload = !window.location.search.includes('v=');
+        if (shouldForceReload) {
+            const newUrl = window.location.pathname + window.location.search + (window.location.search ? '&' : '?') + 'v=' + Date.now();
+            window.location.replace(newUrl);
+        }
+
         if (isFetched.current) return;
         isFetched.current = true;
     
@@ -121,9 +127,9 @@ export default function App() {
         const isOnlyConsonant = /^[ㄱ-ㅎ]+$/.test(trimmedInput);
         const isOnlyVowel = /^[ㅏ-ㅣ]+$/.test(trimmedInput);
         const isOnlyNumber = /^[0-9]+$/.test(trimmedInput);
+        const isOnlySpecialChar = /^[^A-Za-z0-9가-힣ㄱ-ㅎㅏ-ㅣ]+$/.test(trimmedInput);
 
-
-        if (isOnlyEnglish || isSingleKoreanChar || isOnlyConsonant || isOnlyVowel || isOnlyNumber) {
+        if (isOnlyEnglish || isSingleKoreanChar || isOnlyConsonant || isOnlyVowel || isOnlyNumber || isOnlySpecialChar) {
             setIsError(true);
             setInputValue("");
             isProcessing.current = false;
