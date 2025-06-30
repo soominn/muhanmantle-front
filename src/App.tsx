@@ -120,8 +120,10 @@ export default function App() {
         const isSingleKoreanChar = /^[가-힣]$/.test(trimmedInput);
         const isOnlyConsonant = /^[ㄱ-ㅎ]+$/.test(trimmedInput);
         const isOnlyVowel = /^[ㅏ-ㅣ]+$/.test(trimmedInput);
+        const isOnlyNumber = /^[0-9]+$/.test(trimmedInput);
 
-        if (isOnlyEnglish || isSingleKoreanChar || isOnlyConsonant || isOnlyVowel) {
+
+        if (isOnlyEnglish || isSingleKoreanChar || isOnlyConsonant || isOnlyVowel || isOnlyNumber) {
             setIsError(true);
             setInputValue("");
             isProcessing.current = false;
