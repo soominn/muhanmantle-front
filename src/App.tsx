@@ -103,12 +103,27 @@ export default function App() {
     const handleButtonClick = async () => {
         if (isProcessing.current) return;
         isProcessing.current = true;
+
+
     
         const trimmedInput = inputValue.trim();
         const trimmedAnswer = answer ? String(answer).trim() : "";
 
         if (!trimmedInput || !trimmedAnswer) {
             console.error("오류: answer 또는 input 값이 유효하지 않습니다.", { answer, inputValue });
+            isProcessing.current = false;
+            return;
+        }
+
+        // 정규식 검사
+        const isOnlyEnglish = /^[A-Za-z]+$/.test(trimmedInput);
+        const isSingleKoreanChar = /^[가-힣]$/.test(trimmedInput);
+        const isOnlyConsonant = /^[ㄱ-ㅎ]+$/.test(trimmedInput);
+        const isOnlyVowel = /^[ㅏ-ㅣ]+$/.test(trimmedInput);
+
+        if (isOnlyEnglish || isSingleKoreanChar || isOnlyConsonant || isOnlyVowel) {
+            setIsError(true);
+            setInputValue("");
             isProcessing.current = false;
             return;
         }
@@ -240,7 +255,7 @@ export default function App() {
                     <div className="d-flex justify-content-center mb-4">
                         <input
                             className={`form-control me-2 w-50 ${(isError || isSubmitted) ? "is-invalid" : ""}`}
-                            placeholder={isError ? "없는 단어입니다." : isSubmitted ? "이미 제출한 단어입니다." : "단어를 입력하세요."}
+                            placeholder={isError ? "사용할 수 없는 단어입니다." : isSubmitted ? "이미 제출한 단어입니다." : "단어를 입력하세요."}
                             value={inputValue}
                             onChange={handleInputChange}
                             onKeyUp={handleKeyUp}
