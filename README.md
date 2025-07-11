@@ -70,7 +70,6 @@ FastText 기반 백엔드 API와 통신하여 게임 플레이 및 시각화를 
 | 문제 | 해결 방법 |
 |------|------------|
 | CORS 오류 발생 | 백엔드에 `django-cors-headers` 설정 적용 |
-| 새로고침 시 404 오류 | React Router 대응 위해 Nginx `try_files` 설정 적용 |
 | 반응형 깨짐 문제 | styled-components와 미디어쿼리로 해결 |
 
 ---
