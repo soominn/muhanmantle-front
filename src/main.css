@@ -19,6 +19,22 @@ body {
     .main-width, .alert-width {
         width: 100%;
     }
+
+    footer {
+        flex-direction: column !important;
+        text-align: left;
+    }
+
+    footer a {
+        order: -1;
+        margin-bottom: 1rem;
+    }
+
+    footer p {
+        order: 1;
+        width: 100%;
+        text-align: left;
+    }
 }
 
 @keyframes rainbow {

@@ -257,7 +257,7 @@ export default function App() {
                     </div>
 
                     <h3 className="py-3">
-                        <span className="text-success">{Number(answer).toLocaleString()}</span> 번째 정답 단어를 맞춰보세요 🚀
+                        <span className="text-success">{Number(answer).toLocaleString()}</span> 번째 단어를 맞춰보세요 🚀
                     </h3>
 
                     <div className="d-flex justify-content-center mb-4">
