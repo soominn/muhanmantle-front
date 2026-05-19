@@ -1,65 +1,99 @@
 import React, { useState } from "react";
+import type { GuessResult } from "../types/game";
+import { guessCosineSimilarity } from "../utils/sorting";
 
 interface TableProps {
-    resultArr: (string | number)[][];
+  guesses: GuessResult[];
 }
 
-export default function Table({ resultArr }: TableProps) {
-    const [showMore, setShowMore] = useState(false);
+const VISIBLE_ROWS = 5;
 
-    const toggleRows = () => {
-        setShowMore(!showMore);
-    };
+/** Map cosine [-1, 1] → bar width 0–100%. */
+function cosineToBarWidth(cos: number): string {
+  const pct = ((cos + 1) / 2) * 100;
+  return `${Math.max(0, Math.min(100, pct))}%`;
+}
 
-    return (
-        <div className="table-responsive mx-auto">
-            <table className="table table-hover table-bordered text-center rounded-3 shadow-sm">
-                <thead>
-                    <tr>
-                        <th style={{ width: "10%" }}>#</th>
-                        <th style={{ width: "50%" }}>단어</th>
-                        <th style={{ width: "20%" }}>유사도</th>
-                        <th style={{ width: "20%" }}>순위</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {resultArr.length === 0 ? (
-                        <tr>
-                            <td colSpan={4} className="text-center text-secondary">
-                                제출한 단어가 없습니다.
-                            </td>
-                        </tr>
-                    ) : (
-                        resultArr.map((row, index) =>
-                            (showMore || index < 5) && (
-                                <tr key={`${row[0]}-${index}`} className={index === 0 ? "table-secondary" : ""}>
-                                    <td>{row[0]}</td>
-                                    <td>{row[1]}</td>
-                                    <td>{row[2]}</td>
-                                    <td>
-                                        <span className={`badge ${
-                                            row[3] === '정답!'
-                                                ? "rainbow-animation"
-                                                : Number(row[3]) >= 1 && Number(row[3]) <= 10
-                                                    ? "bg-success"
-                                                    : Number(row[3]) >= 11 && Number(row[3]) <= 100
-                                                        ? "bg-success opacity-50"
-                                                        : "bg-light text-secondary"
-                                        }`}>
-                                            {row[3]}
-                                        </span>
-                                    </td>
-                                </tr>
-                            )
-                        )
-                    )}
-                </tbody>
-            </table>
-            {resultArr.length > 5 && (
-                <button className="btn btn-outline-success mt-2 mb-2" onClick={toggleRows}>
-                    {showMore ? "접기" : "더보기"}
-                </button>
+/** 코사인 ×100 (예: 0.1162 → 11.62). */
+function formatSimilarityDisplay(cos: number): string {
+  return (cos * 100).toFixed(2);
+}
+
+function rankBadgeClass(rank: number | string): string {
+  if (rank === "정답!") return "pixel-badge-green rainbow-animation";
+  if (typeof rank === "number" && rank <= 10) return "pixel-badge-green";
+  if (typeof rank === "number" && rank <= 100) return "pixel-badge-gray";
+  return "pixel-badge-none";
+}
+
+export default function Table({ guesses }: TableProps) {
+  const [showAll, setShowAll] = useState(false);
+
+  const visibleRows = showAll ? guesses : guesses.slice(0, VISIBLE_ROWS);
+
+  return (
+    <div className="pixel-table-wrap">
+      <div className="table-responsive">
+        <table className="pixel-table w-full">
+          <thead>
+            <tr>
+              <th style={{ width: "9%" }}>#</th>
+              <th style={{ width: "44%" }}>단어</th>
+              <th style={{ width: "32%" }}>유사도</th>
+              <th style={{ width: "15%" }}>순위</th>
+            </tr>
+          </thead>
+          <tbody>
+            {guesses.length === 0 ? (
+              <tr>
+                <td colSpan={4} className="py-8 text-center text-[#666666]">
+                  제출한 단어가 없습니다.
+                </td>
+              </tr>
+            ) : (
+              visibleRows.map((guess, index) => {
+                const cos = guessCosineSimilarity(guess);
+                return (
+                <tr key={`${guess.attemptNumber}-${index}`}>
+                  <td>
+                    <span className="rank-num">{guess.attemptNumber}</span>
+                  </td>
+                  <td className="word-cell">{guess.word}</td>
+                  <td>
+                    <div className="sim-progress-wrap">
+                      <div className="sim-bar">
+                        <div
+                          className="sim-bar-fill"
+                          style={{ width: cosineToBarWidth(cos) }}
+                        />
+                      </div>
+                      <span className="sim-pct" title="코사인 유사도 ×100">
+                        {formatSimilarityDisplay(cos)}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`pixel-badge ${rankBadgeClass(guess.rank)}`}>
+                      {guess.rank}
+                    </span>
+                  </td>
+                </tr>
+              );
+              })
             )}
+          </tbody>
+        </table>
+      </div>
+      {guesses.length > VISIBLE_ROWS && (
+        <div className="toggle-wrap">
+          <button
+            className="btn-pixel btn-pixel-outline"
+            onClick={() => setShowAll((prev) => !prev)}
+          >
+            {showAll ? "접기" : "더보기"}
+          </button>
         </div>
-    );
+      )}
+    </div>
+  );
 }

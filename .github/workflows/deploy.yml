@@ -27,9 +27,9 @@ jobs:
             npm install
             npm run build
 
-            # Nginx용 정적 파일 덮어쓰기
+            # Nginx용 정적 파일 덮어쓰기 (Vite → dist/)
             sudo rm -rf /var/www/muhanmantle-front/*
-            sudo cp -r build/* /var/www/muhanmantle-front/
+            sudo cp -r dist/* /var/www/muhanmantle-front/
 
             # Nginx 리로드
             sudo systemctl reload nginx

@@ -1,26 +1,45 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
+# ── Dependencies ───────────────────────────────────────────────────────────────
+node_modules/
 /.pnp
 .pnp.js
 
-# testing
-/coverage
+# ── Build / Vite ───────────────────────────────────────────────────────────────
+dist/
+.vite/
 
-# production
-/build
+# ── Legacy (Create React App) ─────────────────────────────────────────────────
+build/
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# ── TypeScript ────────────────────────────────────────────────────────────────
+*.tsbuildinfo
 
+# ── Testing ───────────────────────────────────────────────────────────────────
+coverage/
+
+# ── Environment (secrets) ─────────────────────────────────────────────────────
+.env
+.env.*
+!.env.example
+
+# ── Logs ──────────────────────────────────────────────────────────────────────
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
 
-# 보안 관련 파일
-config.json
+# ── Linters / formatters ─────────────────────────────────────────────────────
+.eslintcache
+.prettiercache
+
+# ── OS ────────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── Editors (keep shared VS Code snippets if you add them) ───────────────────
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# ── Optional: local-only API URL override (do not commit secrets) ─────────────
+public/config.local.json

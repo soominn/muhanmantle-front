@@ -1,11 +1,14 @@
 import React from "react";
 
 export default function Header() {
-    return (
-        <header className="d-flex justify-content-center align-items-center py-3 mb-4 border-bottom">
-            <a href="/" className="d-flex align-items-center gap-2 text-decoration-none">
-                <h2 className="text-success fw-bold mb-0">무한맨틀</h2>
-            </a>
-        </header>
-    );
+  return (
+    <header className="site-header flex items-center justify-center">
+      <a href="/" className="site-logo" aria-label="무한맨틀 홈">
+        <span className="site-logo-badge">GAME</span>
+        <h1 className="site-logo-title">
+          <span>무한</span>맨틀
+        </h1>
+      </a>
+    </header>
+  );
 }
