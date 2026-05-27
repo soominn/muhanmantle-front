@@ -35,12 +35,18 @@ export default function Table({ guesses }: TableProps) {
     <div className="pixel-table-wrap">
       <div className="table-responsive">
         <table className="pixel-table w-full">
+          <colgroup>
+            <col className="col-num" />
+            <col className="col-word" />
+            <col className="col-sim" />
+            <col className="col-rank" />
+          </colgroup>
           <thead>
             <tr>
-              <th style={{ width: "9%" }}>#</th>
-              <th style={{ width: "44%" }}>단어</th>
-              <th style={{ width: "32%" }}>유사도</th>
-              <th style={{ width: "15%" }}>순위</th>
+              <th>#</th>
+              <th>단어</th>
+              <th>유사도</th>
+              <th>순위</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +78,7 @@ export default function Table({ guesses }: TableProps) {
                       </span>
                     </div>
                   </td>
-                  <td>
+                  <td className="rank-cell">
                     <span className={`pixel-badge ${rankBadgeClass(guess.rank)}`}>
                       {guess.rank}
                     </span>

@@ -1,4 +1,8 @@
 @import "tailwindcss";
+/* Bundled fonts — no CDN (works offline / Windows without external fetch) */
+@import "pretendard/dist/web/static/pretendard-subset.css";
+@import "@fontsource/space-mono/400.css";
+@import "@fontsource/space-mono/700.css";
 
 :root {
   --c-primary: #00ff00;
@@ -10,8 +14,8 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --shadow: 4px 4px 0 var(--c-border);
-  --font-mono: "Space Mono", "Courier New", monospace;
-  --font-sans: "Pretendard", sans-serif;
+  --font-mono: "Space Mono", "D2Coding", "Consolas", "Courier New", monospace;
+  --font-sans: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
 *,
@@ -163,7 +167,7 @@ body {
   display: inline-block;
   margin-bottom: 1.4rem;
   padding: 0.6rem 1rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 1.05rem;
   font-weight: 700;
   background: var(--c-surface);
@@ -207,7 +211,7 @@ body {
 }
 
 .btn-pixel {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 0.8rem;
   padding: 8px 18px;
@@ -253,6 +257,24 @@ body {
 .pixel-table {
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.pixel-table .col-num {
+  width: 8%;
+}
+
+.pixel-table .col-word {
+  width: 36%;
+}
+
+.pixel-table .col-sim {
+  width: 36%;
+}
+
+.pixel-table .col-rank {
+  width: 20%;
 }
 
 .pixel-table thead th {
@@ -284,7 +306,6 @@ body {
 }
 
 .rank-num,
-.pixel-badge,
 .site-footer-copy {
   font-family: var(--font-mono);
 }
@@ -306,8 +327,8 @@ body {
 }
 
 .sim-pct {
-  flex: 0 0 3.75rem;
-  width: 3.75rem;
+  flex: 0 0 3.25rem;
+  width: 3.25rem;
   font-family: var(--font-mono);
   text-align: right;
   font-variant-numeric: tabular-nums;
@@ -319,11 +340,19 @@ body {
   border-right: 1.5px solid var(--c-text-1);
 }
 
+.pixel-table .rank-cell {
+  white-space: nowrap;
+}
+
 .pixel-badge {
+  font-family: var(--font-sans);
   font-size: 0.7rem;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: var(--radius-sm);
+  white-space: nowrap;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .pixel-badge-green {
@@ -357,6 +386,25 @@ body {
   font-size: 0.7rem;
   color: var(--c-text-2);
   margin: 0;
+}
+
+@media (max-width: 576px) {
+  .pixel-table thead th,
+  .pixel-table tbody td {
+    font-size: 0.72rem;
+    padding: 8px 6px;
+  }
+
+  .sim-pct {
+    flex: 0 0 2.85rem;
+    width: 2.85rem;
+    font-size: 0.65rem;
+  }
+
+  .pixel-badge {
+    font-size: 0.65rem;
+    padding: 2px 5px;
+  }
 }
 
 @keyframes rainbow {
