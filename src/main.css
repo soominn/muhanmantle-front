@@ -1,6 +1,20 @@
 @import "tailwindcss";
-/* Bundled fonts — no CDN (works offline / Windows without external fetch) */
-@import "pretendard/dist/web/static/pretendard-subset.css";
+/* Bundled fonts — url-only @font-face (no local(); avoids wrong Windows system fonts) */
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("pretendard/dist/web/static/woff2-subset/Pretendard-Regular.subset.woff2")
+    format("woff2");
+}
+@font-face {
+  font-family: "Pretendard";
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+  src: url("pretendard/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2") format("woff2");
+}
 @import "@fontsource/space-mono/400.css";
 @import "@fontsource/space-mono/700.css";
 
@@ -143,8 +157,28 @@ body {
 
 .retro-alert-body,
 .retro-success-body {
-  padding: 0.9rem 1rem;
+  --retro-success-pad-y: 0.9rem;
+  padding: var(--retro-success-pad-y) 1rem;
   border-top: 1px dashed var(--c-border);
+}
+
+.retro-success-body hr {
+  margin: 0.75rem 0 0;
+  border: 0;
+  border-top: 1px dashed var(--c-border);
+}
+
+.retro-success-heading {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.retro-success-next {
+  display: block;
+  margin: var(--retro-success-pad-y) auto 0;
 }
 
 .retro-alert-body {
@@ -266,15 +300,15 @@ body {
 }
 
 .pixel-table .col-word {
-  width: 36%;
+  width: 34%;
 }
 
 .pixel-table .col-sim {
-  width: 36%;
+  width: 34%;
 }
 
 .pixel-table .col-rank {
-  width: 20%;
+  width: 24%;
 }
 
 .pixel-table thead th {
@@ -342,6 +376,7 @@ body {
 
 .pixel-table .rank-cell {
   white-space: nowrap;
+  min-width: 4.75rem;
 }
 
 .pixel-badge {
@@ -352,7 +387,7 @@ body {
   border-radius: var(--radius-sm);
   white-space: nowrap;
   display: inline-block;
-  max-width: 100%;
+  word-break: keep-all;
 }
 
 .pixel-badge-green {

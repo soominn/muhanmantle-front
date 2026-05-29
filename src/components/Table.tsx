@@ -19,6 +19,13 @@ function formatSimilarityDisplay(cos: number): string {
   return (cos * 100).toFixed(2);
 }
 
+function formatRankLabel(rank: number | string): React.ReactNode {
+  if (rank === "순위 밖") {
+    return <>순위{"\u00a0"}밖</>;
+  }
+  return rank;
+}
+
 function rankBadgeClass(rank: number | string): string {
   if (rank === "정답!") return "pixel-badge-green rainbow-animation";
   if (typeof rank === "number" && rank <= 10) return "pixel-badge-green";
@@ -80,7 +87,7 @@ export default function Table({ guesses }: TableProps) {
                   </td>
                   <td className="rank-cell">
                     <span className={`pixel-badge ${rankBadgeClass(guess.rank)}`}>
-                      {guess.rank}
+                      {formatRankLabel(guess.rank)}
                     </span>
                   </td>
                 </tr>

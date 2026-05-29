@@ -95,18 +95,17 @@ export default function App() {
             <div className="retro-success alert-width mx-auto mb-4">
               <div className="retro-success-titlebar">CORRECT!</div>
               <div className="retro-success-body">
-                <h4
-                  className="mb-2 text-left font-bold"
-                  style={{ fontFamily: "var(--font-mono)", fontSize: "1rem" }}
-                >
-                  정답입니다 🚀
-                </h4>
+                <h4 className="retro-success-heading">정답입니다 🚀</h4>
                 <p className="text-left">
                   <strong>{Number(correctAttemptCount).toLocaleString()}</strong>{" "}
                   번째 도전에서 정답을 맞추셨습니다!
                 </p>
                 <hr />
-                <button className="btn-pixel btn-pixel-success" onClick={() => void resetGame()}>
+                <button
+                  type="button"
+                  className="btn-pixel btn-pixel-success retro-success-next"
+                  onClick={() => void resetGame()}
+                >
                   다음 문제
                 </button>
               </div>
