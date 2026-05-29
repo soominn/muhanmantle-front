@@ -20,7 +20,22 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
+            set -euo pipefail
+
             echo "🚀 프론트엔드 배포 시작!"
+
+            export NVM_DIR="$HOME/.nvm"
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+              # non-interactive SSH에서는 .bashrc의 nvm이 로드되지 않을 수 있음
+              . "$NVM_DIR/nvm.sh"
+              nvm use 22
+            else
+              echo "❌ nvm not found at $NVM_DIR — install Node 22+ on the server"
+              exit 1
+            fi
+
+            node -v
+            npm -v
 
             cd ~/projects/muhanmantle-front
             git pull origin main
