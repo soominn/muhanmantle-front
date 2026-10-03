@@ -1,4 +1,4 @@
-import React from "react";
+import { useState } from "react";
 import type { KeyboardEvent } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -9,35 +9,62 @@ import type { ShoutRankingItem } from "./types/game";
 import type { ShoutRankingStatus } from "./hooks/useGameState";
 import { revealedAnswerParts } from "./utils/revealedAnswer";
 
+const SHOUT_RANKING_NOTE =
+  "모든 퍼즐에서 사람들이 제출한 단어를 센 순위입니다. 같은 사람이 같은 단어를 여러 번 쳐도 한 번만 셉니다.";
+
 function ShoutRanking({
   items,
   status,
+  onOpen,
 }: {
   items: ShoutRankingItem[];
   status: ShoutRankingStatus;
+  onOpen: () => void;
 }) {
+  const [open, setOpen] = useState(false);
+  const showList = open && status === "ready" && items.length > 0;
+
+  function toggle() {
+    if (!open) onOpen();
+    setOpen((current) => !current);
+  }
+
   return (
     <section className="retro-alert" aria-label="외친 단어">
-      <div className="retro-alert-titlebar">SHOUTS</div>
-      <div className="retro-alert-body shout-ranking">
-        {status === "loading" ? (
-          <p className="shout-empty">불러오는 중…</p>
-        ) : status === "error" ? (
-          <p className="shout-empty">순위를 불러오지 못했습니다.</p>
-        ) : items.length === 0 ? (
-          <p className="shout-empty">아직 외친 단어가 없습니다.</p>
-        ) : (
-          <ol className="shout-list">
-            {items.map((item, index) => (
-              <li key={`${item.word}-${index}`}>
-                <span className="shout-pos">{index + 1}</span>
-                <span className="shout-word">{item.word}</span>
-                <span className="shout-count">{Number(item.count).toLocaleString("ko-KR")}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
+      <button
+        type="button"
+        className="retro-alert-titlebar shout-toggle"
+        aria-expanded={open}
+        aria-controls="shout-ranking-panel"
+        onClick={toggle}
+      >
+        SHOUTS
+        <span className="shout-toggle-mark" aria-hidden="true">
+          {open ? "−" : "+"}
+        </span>
+      </button>
+      {open && (
+        <div id="shout-ranking-panel" className="retro-alert-body shout-ranking">
+          <p className="shout-note">{SHOUT_RANKING_NOTE}</p>
+          {showList ? (
+            <ol className="shout-list">
+              {items.map((item, index) => (
+                <li key={`${item.word}-${index}`}>
+                  <span className="shout-pos">{index + 1}</span>
+                  <span className="shout-word">{item.word}</span>
+                  <span className="shout-count">{Number(item.count).toLocaleString("ko-KR")}</span>
+                </li>
+              ))}
+            </ol>
+          ) : status === "error" ? (
+            <p className="shout-empty">순위를 불러오지 못했습니다.</p>
+          ) : status === "ready" ? (
+            <p className="shout-empty">아직 외친 단어가 없습니다.</p>
+          ) : (
+            <p className="shout-empty">불러오는 중…</p>
+          )}
+        </div>
+      )}
     </section>
   );
 }
@@ -56,6 +83,7 @@ export default function App() {
     revealedAnswer,
     shoutRanking,
     shoutRankingStatus,
+    loadShoutRanking,
     setInputValue,
     submitGuess,
     giveUp,
@@ -185,7 +213,11 @@ export default function App() {
 
           <Table guesses={guesses} />
 
-          <ShoutRanking items={shoutRanking} status={shoutRankingStatus} />
+          <ShoutRanking
+            items={shoutRanking}
+            status={shoutRankingStatus}
+            onOpen={loadShoutRanking}
+          />
 
           <button
             type="button"

@@ -11,7 +11,7 @@ import { isValidKoreanWord } from "../utils/inputValidation";
 import { sortResults } from "../utils/sorting";
 import type { GuessResult, RevealedAnswer, ShoutRankingItem } from "../types/game";
 
-export type ShoutRankingStatus = "loading" | "ready" | "error";
+export type ShoutRankingStatus = "idle" | "loading" | "ready" | "error";
 
 export interface GameState {
   answerId: number | null;
@@ -26,6 +26,7 @@ export interface GameState {
   revealedAnswer: RevealedAnswer | null;
   shoutRanking: ShoutRankingItem[];
   shoutRankingStatus: ShoutRankingStatus;
+  loadShoutRanking: () => void;
   setInputValue: (v: string) => void;
   submitGuess: () => Promise<void>;
   giveUp: () => Promise<void>;
@@ -45,12 +46,14 @@ export function useGameState(): GameState {
   const [isGivingUp, setIsGivingUp] = useState(false);
   const [revealedAnswer, setRevealedAnswer] = useState<RevealedAnswer | null>(null);
   const [shoutRanking, setShoutRanking] = useState<ShoutRankingItem[]>([]);
-  const [shoutRankingStatus, setShoutRankingStatus] = useState<ShoutRankingStatus>("loading");
+  const [shoutRankingStatus, setShoutRankingStatus] = useState<ShoutRankingStatus>("idle");
 
   const isSubmitting = useRef(false);
   const isGivingUpRef = useRef(false);
   const guessesRef = useRef<GuessResult[]>(guesses);
   const gameBaseRef = useRef(gameBase);
+  const shoutWantedRef = useRef(false);
+  const shoutStatusRef = useRef<ShoutRankingStatus>("idle");
 
   useEffect(() => {
     guessesRef.current = guesses;
@@ -98,29 +101,31 @@ export function useGameState(): GameState {
     };
   }, []);
 
-  useEffect(() => {
-    if (!gameBase) return;
+  const loadShoutRanking = () => {
+    shoutWantedRef.current = true;
+    const base = gameBaseRef.current;
+    if (!base) return;
+    if (shoutStatusRef.current === "loading" || shoutStatusRef.current === "ready") return;
 
-    let cancelled = false;
+    shoutStatusRef.current = "loading";
     setShoutRankingStatus("loading");
-
-    fetchShoutRanking(gameBase)
+    fetchShoutRanking(base)
       .then((data) => {
-        if (cancelled) return;
         const items = [...(data.items ?? [])].sort((a, b) => b.count - a.count);
         setShoutRanking(items);
+        shoutStatusRef.current = "ready";
         setShoutRankingStatus("ready");
       })
       .catch((err) => {
-        if (cancelled) return;
         console.error("외침 순위 조회 실패:", err);
         setShoutRanking([]);
+        shoutStatusRef.current = "error";
         setShoutRankingStatus("error");
       });
+  };
 
-    return () => {
-      cancelled = true;
-    };
+  useEffect(() => {
+    if (gameBase && shoutWantedRef.current) loadShoutRanking();
   }, [gameBase]);
 
   const submitGuess = async (): Promise<void> => {
@@ -213,6 +218,7 @@ export function useGameState(): GameState {
     revealedAnswer,
     shoutRanking,
     shoutRankingStatus,
+    loadShoutRanking,
     setInputValue,
     submitGuess,
     giveUp,

@@ -475,8 +475,25 @@ body {
   overflow-wrap: anywhere;
 }
 
+.shout-toggle {
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.shout-toggle-mark {
+  margin-left: auto;
+  letter-spacing: 0;
+}
+
 .shout-ranking {
   text-align: left;
+}
+
+.shout-note {
+  margin: 0 0 0.75rem;
+  line-height: 1.45;
 }
 
 .shout-empty {
