@@ -66,7 +66,6 @@ export default function NoticesView({ onClose }: { onClose: () => void }) {
         {selected ? (
           <>
             <h2 className="notice-detail-heading">{selected.title}</h2>
-            <p className="notice-detail-date">{selected.date}</p>
             <NoticeBody markdown={selected.body} />
           </>
         ) : status === "loading" ? (
@@ -81,7 +80,6 @@ export default function NoticesView({ onClose }: { onClose: () => void }) {
               <li key={item.slug}>
                 <button type="button" onClick={() => setSelectedSlug(item.slug)}>
                   <span className="notice-title">{item.title}</span>
-                  <span className="notice-date">{item.date}</span>
                 </button>
               </li>
             ))}
