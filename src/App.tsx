@@ -5,42 +5,7 @@ import Footer from "./components/Footer";
 import Table from "./components/Table";
 import UpdateNotice from "./components/UpdateNotice";
 import { useGameState } from "./hooks/useGameState";
-import type { ShoutRankingItem } from "./types/game";
-import type { ShoutRankingStatus } from "./hooks/useGameState";
 import { revealedAnswerParts } from "./utils/revealedAnswer";
-
-function ShoutRanking({
-  items,
-  status,
-}: {
-  items: ShoutRankingItem[];
-  status: ShoutRankingStatus;
-}) {
-  return (
-    <section className="retro-alert" aria-label="외침 순위">
-      <div className="retro-alert-titlebar">외친 단어</div>
-      <div className="retro-alert-body shout-ranking">
-        {status === "loading" ? (
-          <p className="shout-empty">불러오는 중…</p>
-        ) : status === "error" ? (
-          <p className="shout-empty">순위를 불러오지 못했습니다.</p>
-        ) : items.length === 0 ? (
-          <p className="shout-empty">아직 외친 단어가 없습니다.</p>
-        ) : (
-          <ol className="shout-list">
-            {items.map((item, index) => (
-              <li key={`${item.word}-${index}`}>
-                <span className="shout-pos">{index + 1}</span>
-                <span className="shout-word">{item.word}</span>
-                <span className="shout-count">{Number(item.count).toLocaleString("ko-KR")}</span>
-              </li>
-            ))}
-          </ol>
-        )}
-      </div>
-    </section>
-  );
-}
 
 export default function App() {
   const {
@@ -54,8 +19,6 @@ export default function App() {
     isSessionReady,
     isGivingUp,
     revealedAnswer,
-    shoutRanking,
-    shoutRankingStatus,
     setInputValue,
     submitGuess,
     giveUp,
@@ -184,8 +147,6 @@ export default function App() {
           )}
 
           <Table guesses={guesses} />
-
-          <ShoutRanking items={shoutRanking} status={shoutRankingStatus} />
 
           <button
             type="button"

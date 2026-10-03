@@ -42,13 +42,3 @@ export interface RevealedAnswer {
 export interface GameGiveUpResponse extends GameSessionResponse {
   revealed_answer: RevealedAnswer;
 }
-
-/** GET /api/game/session/shout-ranking */
-export interface ShoutRankingItem {
-  word: string;
-  count: number;
-}
-
-export interface ShoutRankingResponse {
-  items: ShoutRankingItem[];
-}

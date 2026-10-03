@@ -2,7 +2,6 @@ import type {
   GameGiveUpResponse,
   GameGuessResponse,
   GameSessionResponse,
-  ShoutRankingResponse,
 } from "../types/game";
 
 const SESSION_STORAGE_KEY = "muhanmantle_mm_session";
@@ -102,18 +101,6 @@ export async function postGameGiveUp(base: string): Promise<GameGiveUpResponse> 
   }
   persistGameSessionId(data.session_id);
   return data;
-}
-
-export async function fetchShoutRanking(base: string): Promise<ShoutRankingResponse> {
-  const response = await fetch(`${base}/session/shout-ranking`, {
-    headers: sessionRequestHeaders(),
-    credentials: "include",
-  });
-  if (!response.ok) {
-    throw new Error(await parseJsonError(response));
-  }
-  const data = (await response.json()) as ShoutRankingResponse;
-  return { items: Array.isArray(data.items) ? data.items : [] };
 }
 
 export async function postGameReset(base: string): Promise<GameSessionResponse> {
