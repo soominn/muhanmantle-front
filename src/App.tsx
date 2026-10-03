@@ -17,7 +17,7 @@ function ShoutRanking({
 }) {
   return (
     <section className="retro-alert" aria-label="외침 순위">
-      <div className="retro-alert-titlebar">SHOUTS</div>
+      <div className="retro-alert-titlebar">외친 단어</div>
       <div className="retro-alert-body shout-ranking">
         {status === "loading" ? (
           <p className="shout-empty">불러오는 중…</p>
@@ -139,7 +139,7 @@ export default function App() {
 
           {revealedAnswer && (
             <div className="retro-alert alert-width mx-auto mb-4" role="status">
-              <div className="retro-alert-titlebar">GIVE UP</div>
+              <div className="retro-alert-titlebar">포기</div>
               <div className="retro-alert-body">
                 <p className="revealed-answer">
                   {formatRevealedAnswer(revealedAnswer.number, revealedAnswer.word)}
