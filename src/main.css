@@ -109,10 +109,6 @@ body {
   -webkit-text-stroke: 0.5px var(--c-text-1);
 }
 
-.update-notice-body {
-  text-align: left;
-}
-
 .notices-entry {
   margin-left: 14px;
   padding: 0 0 1px;
@@ -189,28 +185,6 @@ body {
 .notice-back {
   display: inline-block;
   margin-top: 1rem;
-}
-
-.update-notice-body p {
-  margin: 0;
-}
-
-.update-notice-body p + p {
-  margin-top: 0.35rem;
-}
-
-.update-notice-close {
-  margin-left: auto;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: inherit;
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0;
-  line-height: 1;
-  cursor: pointer;
 }
 
 .retro-alert,
