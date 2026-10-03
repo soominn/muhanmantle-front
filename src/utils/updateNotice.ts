@@ -1,6 +1,9 @@
 export const UPDATE_NOTICE_LINES = [
+  "개인적으로 만든 게임인데, 생각보다 많은 분들이 즐겨 주셔서 업데이트를 조금 했어요.",
+  "이제 잘 관리해 보겠습니다.",
   "포기하면 그 번호의 정답을 알려줘요.",
   "이 퍼즐에서 많이 외친 단어 순위를 볼 수 있어요.",
+  "유사도 계산도 나중에 업데이트할 예정이에요. 언제인지는 아직 모릅니다.",
 ] as const;
 
 /** Storage key stays glued to the copy, so a wording change shows the notice again. */
