@@ -121,7 +121,7 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <Header />
+      <Header onOpenNotices={() => setScreen("notices")} />
       <div className="flex w-full min-w-0 flex-col items-center text-center">
         <main className="main-width min-w-0 px-0 md:px-3">
           {screen === "notices" ? (
@@ -233,16 +233,6 @@ export default function App() {
           >
             포기하기
           </button>
-
-          <section className="retro-alert mt-6">
-            <button
-              type="button"
-              className="retro-alert-titlebar notices-entry"
-              onClick={() => setScreen("notices")}
-            >
-              NOTICES
-            </button>
-          </section>
           </>
           )}
         </main>

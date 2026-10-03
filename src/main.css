@@ -114,10 +114,18 @@ body {
 }
 
 .notices-entry {
-  width: 100%;
+  margin-left: 14px;
+  padding: 0 0 1px;
   border: 0;
+  border-bottom: 1.5px solid var(--c-primary);
+  background: transparent;
+  color: var(--c-text-1);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  line-height: 1.2;
   cursor: pointer;
-  text-align: left;
 }
 
 .notice-body {
