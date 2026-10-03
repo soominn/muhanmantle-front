@@ -42,3 +42,13 @@ export interface RevealedAnswer {
 export interface GameGiveUpResponse extends GameSessionResponse {
   revealed_answer: RevealedAnswer;
 }
+
+/** GET /api/game/shout-ranking — global counts, not the current puzzle. */
+export interface ShoutRankingItem {
+  word: string;
+  count: number;
+}
+
+export interface ShoutRankingResponse {
+  items: ShoutRankingItem[];
+}

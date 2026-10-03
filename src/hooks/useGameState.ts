@@ -2,13 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import { fetchFrontConfig } from "../api/config";
 import {
   fetchGameSession,
+  fetchShoutRanking,
   postGameGiveUp,
   postGameGuess,
   postGameReset,
 } from "../api/gameSession";
 import { isValidKoreanWord } from "../utils/inputValidation";
 import { sortResults } from "../utils/sorting";
-import type { GuessResult, RevealedAnswer } from "../types/game";
+import type { GuessResult, RevealedAnswer, ShoutRankingItem } from "../types/game";
+
+export type ShoutRankingStatus = "loading" | "ready" | "error";
 
 export interface GameState {
   answerId: number | null;
@@ -21,6 +24,8 @@ export interface GameState {
   isSessionReady: boolean;
   isGivingUp: boolean;
   revealedAnswer: RevealedAnswer | null;
+  shoutRanking: ShoutRankingItem[];
+  shoutRankingStatus: ShoutRankingStatus;
   setInputValue: (v: string) => void;
   submitGuess: () => Promise<void>;
   giveUp: () => Promise<void>;
@@ -39,6 +44,8 @@ export function useGameState(): GameState {
   const [isSessionReady, setIsSessionReady] = useState(false);
   const [isGivingUp, setIsGivingUp] = useState(false);
   const [revealedAnswer, setRevealedAnswer] = useState<RevealedAnswer | null>(null);
+  const [shoutRanking, setShoutRanking] = useState<ShoutRankingItem[]>([]);
+  const [shoutRankingStatus, setShoutRankingStatus] = useState<ShoutRankingStatus>("loading");
 
   const isSubmitting = useRef(false);
   const isGivingUpRef = useRef(false);
@@ -90,6 +97,31 @@ export function useGameState(): GameState {
       cancelled = true;
     };
   }, []);
+
+  useEffect(() => {
+    if (!gameBase) return;
+
+    let cancelled = false;
+    setShoutRankingStatus("loading");
+
+    fetchShoutRanking(gameBase)
+      .then((data) => {
+        if (cancelled) return;
+        const items = [...(data.items ?? [])].sort((a, b) => b.count - a.count);
+        setShoutRanking(items);
+        setShoutRankingStatus("ready");
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        console.error("외침 순위 조회 실패:", err);
+        setShoutRanking([]);
+        setShoutRankingStatus("error");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [gameBase]);
 
   const submitGuess = async (): Promise<void> => {
     const base = gameBaseRef.current;
@@ -179,6 +211,8 @@ export function useGameState(): GameState {
     isSessionReady,
     isGivingUp,
     revealedAnswer,
+    shoutRanking,
+    shoutRankingStatus,
     setInputValue,
     submitGuess,
     giveUp,

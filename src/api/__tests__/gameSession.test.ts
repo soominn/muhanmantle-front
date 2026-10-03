@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { persistGameSessionId, postGameGiveUp } from "../gameSession";
+import { fetchShoutRanking, persistGameSessionId, postGameGiveUp } from "../gameSession";
 
 const SESSION_ID = "11111111-1111-4111-8111-111111111111";
 
@@ -39,5 +39,31 @@ describe("game session contract", () => {
       }),
     );
     expect(data.revealed_answer).toEqual({ number: 4, word: "사과" });
+  });
+
+  it("loads the global shout ranking", async () => {
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          { word: "사과", count: 12 },
+          { word: "바나나", count: 3 },
+        ],
+      }),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const data = await fetchShoutRanking("http://example.test/api/game");
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      "http://example.test/api/game/shout-ranking",
+      expect.objectContaining({
+        credentials: "include",
+      }),
+    );
+    expect(data.items).toEqual([
+      { word: "사과", count: 12 },
+      { word: "바나나", count: 3 },
+    ]);
   });
 });
