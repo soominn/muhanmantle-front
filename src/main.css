@@ -486,21 +486,32 @@ body {
   overflow-wrap: anywhere;
 }
 
-.revealed-answer-word {
-  display: inline-block;
+.revealed-answer-unit {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
   max-width: 100%;
   margin: 0 0.12em;
+  white-space: nowrap;
+  overflow-wrap: normal;
+  vertical-align: middle;
+}
+
+.revealed-answer-word {
+  display: inline-block;
   padding: 0.02em 0.28em 0.08em;
   font-size: 3.25rem;
   font-weight: 700;
   line-height: 1.15;
-  vertical-align: middle;
   color: var(--c-text-1);
   background: var(--c-primary);
   border: 1.5px solid var(--c-text-1);
   border-radius: var(--radius-sm);
   box-shadow: 3px 3px 0 var(--c-text-1);
-  overflow-wrap: anywhere;
+}
+
+.revealed-answer-ending {
+  white-space: nowrap;
 }
 
 @media (max-width: 576px) {

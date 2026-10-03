@@ -110,7 +110,7 @@ export default function App() {
               <div className="retro-alert-titlebar">포기</div>
               <div className="retro-alert-body">
                 <p className="revealed-answer">
-                  {revealedParts?.before}<span className="revealed-answer-word">{revealedParts?.word}</span>{revealedParts?.after}
+                  {revealedParts?.before}<span className="revealed-answer-unit"><span className="revealed-answer-word">{revealedParts?.word}</span><span className="revealed-answer-ending">{revealedParts?.after}</span></span>
                 </p>
                 {answerRevealed && (
                   <button
