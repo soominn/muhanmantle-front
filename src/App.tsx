@@ -4,6 +4,42 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Table from "./components/Table";
 import { useGameState } from "./hooks/useGameState";
+import type { ShoutRankingItem } from "./types/game";
+import type { ShoutRankingStatus } from "./hooks/useGameState";
+import { formatRevealedAnswer } from "./utils/revealedAnswer";
+
+function ShoutRanking({
+  items,
+  status,
+}: {
+  items: ShoutRankingItem[];
+  status: ShoutRankingStatus;
+}) {
+  return (
+    <section className="retro-alert" aria-label="외침 순위">
+      <div className="retro-alert-titlebar">SHOUTS</div>
+      <div className="retro-alert-body shout-ranking">
+        {status === "loading" ? (
+          <p className="shout-empty">불러오는 중…</p>
+        ) : status === "error" ? (
+          <p className="shout-empty">순위를 불러오지 못했습니다.</p>
+        ) : items.length === 0 ? (
+          <p className="shout-empty">아직 외친 단어가 없습니다.</p>
+        ) : (
+          <ol className="shout-list">
+            {items.map((item, index) => (
+              <li key={`${item.word}-${index}`}>
+                <span className="shout-pos">{index + 1}</span>
+                <span className="shout-word">{item.word}</span>
+                <span className="shout-count">{Number(item.count).toLocaleString("ko-KR")}</span>
+              </li>
+            ))}
+          </ol>
+        )}
+      </div>
+    </section>
+  );
+}
 
 export default function App() {
   const {
@@ -15,8 +51,13 @@ export default function App() {
     hasError,
     isDuplicate,
     isSessionReady,
+    isGivingUp,
+    revealedAnswer,
+    shoutRanking,
+    shoutRankingStatus,
     setInputValue,
     submitGuess,
+    giveUp,
     resetGame,
   } = useGameState();
 
@@ -35,15 +76,20 @@ export default function App() {
 
   function handleGiveUp() {
     if (window.confirm("포기하시겠습니까?")) {
-      void resetGame();
+      void giveUp();
     }
   }
+
+  const answerRevealed =
+    revealedAnswer != null && revealedAnswer.number === answerId;
+  const inputLocked =
+    !isSessionReady || answerId == null || isCorrect || answerRevealed;
 
   return (
     <div className="mx-auto max-w-6xl px-4">
       <Header />
-      <div className="flex flex-col items-center text-center">
-        <main className="main-width px-0 md:px-3">
+      <div className="flex w-full min-w-0 flex-col items-center text-center">
+        <main className="main-width min-w-0 px-0 md:px-3">
           <div className="retro-alert" role="alert">
             <div className="retro-alert-titlebar">INFO</div>
             <div className="retro-alert-body">
@@ -66,7 +112,7 @@ export default function App() {
               <>등록된 정답 단어가 없습니다.</>
             ) : (
               <>
-                <span className="num-highlight">{Number(answerId).toLocaleString()}</span>
+                <span className="num-highlight">{Number(answerId).toLocaleString("ko-KR")}</span>
                 &nbsp;번째 정답 단어를 맞춰보세요&nbsp;🚀
               </>
             )}
@@ -79,17 +125,37 @@ export default function App() {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyUp={handleKeyUp}
-              disabled={!isSessionReady || answerId == null || isCorrect}
+              disabled={inputLocked}
             />
             <button
               className="btn-pixel btn-pixel-primary"
               type="button"
               onClick={() => void submitGuess()}
-              disabled={!isSessionReady || answerId == null || isCorrect}
+              disabled={inputLocked}
             >
               맞추기
             </button>
           </div>
+
+          {revealedAnswer && (
+            <div className="retro-alert alert-width mx-auto mb-4" role="status">
+              <div className="retro-alert-titlebar">GIVE UP</div>
+              <div className="retro-alert-body">
+                <p className="revealed-answer">
+                  {formatRevealedAnswer(revealedAnswer.number, revealedAnswer.word)}
+                </p>
+                {answerRevealed && (
+                  <button
+                    type="button"
+                    className="btn-pixel btn-pixel-outline retro-success-next"
+                    onClick={() => void resetGame()}
+                  >
+                    다음 문제
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
 
           {isCorrect && (
             <div className="retro-success alert-width mx-auto mb-4">
@@ -114,7 +180,14 @@ export default function App() {
 
           <Table guesses={guesses} />
 
-          <button className="btn-pixel btn-pixel-outline mt-3" onClick={handleGiveUp}>
+          <ShoutRanking items={shoutRanking} status={shoutRankingStatus} />
+
+          <button
+            type="button"
+            className="btn-pixel btn-pixel-outline mt-3"
+            onClick={handleGiveUp}
+            disabled={!isSessionReady || answerId == null || isGivingUp || answerRevealed}
+          >
             포기하기
           </button>
         </main>

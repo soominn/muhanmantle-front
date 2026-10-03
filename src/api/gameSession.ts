@@ -1,4 +1,9 @@
-import type { GameGuessResponse, GameSessionResponse } from "../types/game";
+import type {
+  GameGiveUpResponse,
+  GameGuessResponse,
+  GameSessionResponse,
+  ShoutRankingResponse,
+} from "../types/game";
 
 const SESSION_STORAGE_KEY = "muhanmantle_mm_session";
 
@@ -74,6 +79,41 @@ export async function postGameGuess(
   }
   persistGameSessionId(data.session_id);
   return data;
+}
+
+export async function postGameGiveUp(base: string): Promise<GameGiveUpResponse> {
+  const response = await fetch(`${base}/session/give-up`, {
+    method: "POST",
+    headers: sessionRequestHeaders(),
+    credentials: "include",
+  });
+  const data = (await response.json().catch(() => ({}))) as GameGiveUpResponse & {
+    error?: string;
+    detail?: string;
+  };
+  if (!response.ok) {
+    throw new Error(
+      typeof data.error === "string"
+        ? data.error
+        : typeof data.detail === "string"
+          ? data.detail
+          : `서버 응답 오류: ${response.status}`,
+    );
+  }
+  persistGameSessionId(data.session_id);
+  return data;
+}
+
+export async function fetchShoutRanking(base: string): Promise<ShoutRankingResponse> {
+  const response = await fetch(`${base}/session/shout-ranking`, {
+    headers: sessionRequestHeaders(),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    throw new Error(await parseJsonError(response));
+  }
+  const data = (await response.json()) as ShoutRankingResponse;
+  return { items: Array.isArray(data.items) ? data.items : [] };
 }
 
 export async function postGameReset(base: string): Promise<GameSessionResponse> {
