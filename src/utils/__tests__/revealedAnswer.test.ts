@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { formatRevealedAnswer } from "../revealedAnswer";
+import { formatRevealedAnswer, revealedAnswerParts } from "../revealedAnswer";
 
 describe("formatRevealedAnswer", () => {
   it("uses 였다 when the word has no batchim", () => {
@@ -18,5 +18,11 @@ describe("formatRevealedAnswer", () => {
   it("looks at the last character only", () => {
     expect(formatRevealedAnswer(3, "각사")).toBe("3번 정답은 각사였다.");
     expect(formatRevealedAnswer(5, "사각")).toBe("5번 정답은 사각이었다.");
+  });
+
+  it("keeps the full sentence when the answer word is split out", () => {
+    const parts = revealedAnswerParts(12847, "달력");
+    expect(parts.word).toBe("달력");
+    expect(`${parts.before}${parts.word}${parts.after}`).toBe("12,847번 정답은 달력이었다.");
   });
 });

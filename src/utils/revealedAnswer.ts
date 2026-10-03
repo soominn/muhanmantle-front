@@ -5,8 +5,23 @@ function endsWithBatchim(word: string): boolean {
   return (last - 0xac00) % 28 !== 0;
 }
 
+export interface RevealedAnswerParts {
+  before: string;
+  word: string;
+  after: string;
+}
+
 /** "{n}번 정답은 {word}였다/이었다." — n matches the on-screen answer number. */
-export function formatRevealedAnswer(number: number, word: string): string {
+export function revealedAnswerParts(number: number, word: string): RevealedAnswerParts {
   const ending = endsWithBatchim(word) ? "이었다" : "였다";
-  return `${Number(number).toLocaleString("ko-KR")}번 정답은 ${word}${ending}.`;
+  return {
+    before: `${Number(number).toLocaleString("ko-KR")}번 정답은 `,
+    word,
+    after: `${ending}.`,
+  };
+}
+
+export function formatRevealedAnswer(number: number, word: string): string {
+  const parts = revealedAnswerParts(number, word);
+  return `${parts.before}${parts.word}${parts.after}`;
 }

@@ -7,7 +7,7 @@ import UpdateNotice from "./components/UpdateNotice";
 import { useGameState } from "./hooks/useGameState";
 import type { ShoutRankingItem } from "./types/game";
 import type { ShoutRankingStatus } from "./hooks/useGameState";
-import { formatRevealedAnswer } from "./utils/revealedAnswer";
+import { revealedAnswerParts } from "./utils/revealedAnswer";
 
 function ShoutRanking({
   items,
@@ -83,6 +83,9 @@ export default function App() {
 
   const answerRevealed =
     revealedAnswer != null && revealedAnswer.number === answerId;
+  const revealedParts = revealedAnswer
+    ? revealedAnswerParts(revealedAnswer.number, revealedAnswer.word)
+    : null;
   const inputLocked =
     !isSessionReady || answerId == null || isCorrect || answerRevealed;
 
@@ -144,7 +147,7 @@ export default function App() {
               <div className="retro-alert-titlebar">포기</div>
               <div className="retro-alert-body">
                 <p className="revealed-answer">
-                  {formatRevealedAnswer(revealedAnswer.number, revealedAnswer.word)}
+                  {revealedParts?.before}<span className="revealed-answer-word">{revealedParts?.word}</span>{revealedParts?.after}
                 </p>
                 {answerRevealed && (
                   <button
