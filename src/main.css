@@ -144,14 +144,23 @@ body {
   align-items: baseline;
   gap: 12px;
   min-width: 0;
-  padding: 8px 0;
+  padding: 0;
   border: 0;
-  border-bottom: 1px dashed var(--c-border);
   background: transparent;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
+}
+
+.notice-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--c-border);
+}
+
+.notice-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .notice-list li:last-child button {
@@ -167,11 +176,14 @@ body {
   color: var(--c-text-1);
 }
 
-.notice-detail-heading {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: var(--c-text-1);
+.notice-mark {
+  flex: 0 0 auto;
+  color: var(--c-text-2);
+  letter-spacing: 0;
+}
+
+.notice-panel {
+  margin-top: 0.6rem;
 }
 
 .notice-body p {
