@@ -16,15 +16,18 @@ export default function UpdateNotice() {
   }
 
   return (
-    <aside className="update-notice" role="status" aria-label="업데이트 안내">
-      <ul className="update-notice-list">
+    <aside className="retro-alert" role="status" aria-label="업데이트 안내">
+      <div className="retro-alert-titlebar">
+        UPDATE
+        <button type="button" className="update-notice-close" onClick={dismiss} aria-label="닫기">
+          X
+        </button>
+      </div>
+      <div className="retro-alert-body update-notice-body">
         {UPDATE_NOTICE_LINES.map((line) => (
-          <li key={line}>{line}</li>
+          <p key={line}>{line}</p>
         ))}
-      </ul>
-      <button type="button" className="btn-pixel btn-pixel-outline update-notice-close" onClick={dismiss}>
-        닫기
-      </button>
+      </div>
     </aside>
   );
 }

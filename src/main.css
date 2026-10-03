@@ -109,37 +109,26 @@ body {
   -webkit-text-stroke: 0.5px var(--c-text-1);
 }
 
-.update-notice {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  width: 100%;
-  max-width: 100%;
-  min-width: 0;
-  margin-bottom: 1.5rem;
-  padding: 0.7rem 0.8rem;
-  text-align: left;
-  background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow);
-}
-
-.update-notice-list {
-  flex: 1 1 auto;
-  min-width: 0;
+.update-notice-body p {
   margin: 0;
-  padding-left: 1.1rem;
-  font-size: 0.875rem;
-  color: var(--c-text-1);
 }
 
-.update-notice-list li + li {
-  margin-top: 0.25rem;
+.update-notice-body p + p {
+  margin-top: 0.35rem;
 }
 
 .update-notice-close {
-  flex: 0 0 auto;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .retro-alert,
@@ -486,32 +475,19 @@ body {
   overflow-wrap: anywhere;
 }
 
-.revealed-answer-unit {
-  display: inline-flex;
-  flex-wrap: nowrap;
-  align-items: baseline;
-  max-width: 100%;
-  margin: 0 0.12em;
-  white-space: nowrap;
-  overflow-wrap: normal;
-  vertical-align: middle;
-}
-
 .revealed-answer-word {
   display: inline-block;
+  margin: 0 0.12em;
   padding: 0.02em 0.28em 0.08em;
-  font-size: 3.25rem;
+  font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.15;
+  vertical-align: middle;
   color: var(--c-text-1);
   background: var(--c-primary);
   border: 1.5px solid var(--c-text-1);
   border-radius: var(--radius-sm);
   box-shadow: 3px 3px 0 var(--c-text-1);
-}
-
-.revealed-answer-ending {
-  white-space: nowrap;
 }
 
 @media (max-width: 576px) {

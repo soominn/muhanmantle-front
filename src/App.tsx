@@ -107,10 +107,10 @@ export default function App() {
 
           {revealedAnswer && (
             <div className="retro-alert alert-width mx-auto mb-4" role="status">
-              <div className="retro-alert-titlebar">포기</div>
+              <div className="retro-alert-titlebar">GIVE UP</div>
               <div className="retro-alert-body">
                 <p className="revealed-answer">
-                  {revealedParts?.before}<span className="revealed-answer-unit"><span className="revealed-answer-word">{revealedParts?.word}</span><span className="revealed-answer-ending">{revealedParts?.after}</span></span>
+                  {revealedParts?.before}<span className="revealed-answer-word">{revealedParts?.word}</span>
                 </p>
                 {answerRevealed && (
                   <button
