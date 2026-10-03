@@ -30,7 +30,7 @@ function ShoutRanking({
   }
 
   return (
-    <section className="retro-alert" aria-label="외친 단어">
+    <section className="retro-alert mt-6" aria-label="외친 단어">
       <button
         type="button"
         className="retro-alert-titlebar shout-toggle"
