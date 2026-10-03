@@ -3,6 +3,7 @@ import type { KeyboardEvent } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Table from "./components/Table";
+import UpdateNotice from "./components/UpdateNotice";
 import { useGameState } from "./hooks/useGameState";
 import type { ShoutRankingItem } from "./types/game";
 import type { ShoutRankingStatus } from "./hooks/useGameState";
@@ -90,6 +91,7 @@ export default function App() {
       <Header />
       <div className="flex w-full min-w-0 flex-col items-center text-center">
         <main className="main-width min-w-0 px-0 md:px-3">
+          <UpdateNotice />
           <div className="retro-alert" role="alert">
             <div className="retro-alert-titlebar">INFO</div>
             <div className="retro-alert-body">

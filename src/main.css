@@ -109,6 +109,39 @@ body {
   -webkit-text-stroke: 0.5px var(--c-text-1);
 }
 
+.update-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-bottom: 1.5rem;
+  padding: 0.7rem 0.8rem;
+  text-align: left;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow);
+}
+
+.update-notice-list {
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+  padding-left: 1.1rem;
+  font-size: 0.875rem;
+  color: var(--c-text-1);
+}
+
+.update-notice-list li + li {
+  margin-top: 0.25rem;
+}
+
+.update-notice-close {
+  flex: 0 0 auto;
+}
+
 .retro-alert,
 .retro-success {
   background: var(--c-surface);
