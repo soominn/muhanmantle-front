@@ -66,11 +66,44 @@ body {
 }
 
 .site-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: var(--c-bg);
   border-bottom: 2px dashed var(--c-border);
-  padding: 1.25rem 0;
+  padding: 1.25rem 0 1rem;
   margin-bottom: 2.5rem;
   max-width: 100%;
+}
+
+.site-menu {
+  display: flex;
+  margin-top: 0.65rem;
+  border: 1.5px solid var(--c-text-1);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--c-border);
+  overflow: hidden;
+}
+
+.site-menu button {
+  margin: 0;
+  padding: 3px 12px;
+  border: 0;
+  background: var(--c-surface);
+  color: var(--c-text-1);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.site-menu button + button {
+  border-left: 1.5px solid var(--c-text-1);
+}
+
+.site-menu button.is-active {
+  background: var(--c-primary);
 }
 
 .site-logo {
@@ -107,21 +140,6 @@ body {
   color: var(--c-primary);
   text-shadow: 0 0 0 var(--c-text-1), 1px 1px 0 var(--c-text-1);
   -webkit-text-stroke: 0.5px var(--c-text-1);
-}
-
-.notices-entry {
-  margin-left: 14px;
-  padding: 0 0 1px;
-  border: 0;
-  border-bottom: 1.5px solid var(--c-primary);
-  background: transparent;
-  color: var(--c-text-1);
-  font-family: var(--font-sans);
-  font-weight: 700;
-  font-size: 0.75rem;
-  letter-spacing: 0.12em;
-  line-height: 1.2;
-  cursor: pointer;
 }
 
 .notice-body {
@@ -192,11 +210,6 @@ body {
 
 .notice-body p + p {
   margin-top: 0.35rem;
-}
-
-.notice-back {
-  display: inline-block;
-  margin-top: 1rem;
 }
 
 .retro-alert,

@@ -25,7 +25,7 @@ function NoticeBody({ markdown }: { markdown: string }) {
   );
 }
 
-export default function NoticesView({ onClose }: { onClose: () => void }) {
+export default function NoticesView() {
   const [status, setStatus] = useState<NoticesStatus>("loading");
   const [items, setItems] = useState<NoticeItem[]>([]);
   const [openSlugs, setOpenSlugs] = useState<string[]>([]);
@@ -92,9 +92,6 @@ export default function NoticesView({ onClose }: { onClose: () => void }) {
             })}
           </ul>
         )}
-        <button type="button" className="btn-pixel btn-pixel-outline notice-back" onClick={onClose}>
-          BACK
-        </button>
       </div>
     </section>
   );

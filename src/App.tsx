@@ -120,11 +120,11 @@ export default function App() {
 
   return (
     <div className="mx-auto max-w-6xl px-4">
-      <Header onOpenNotices={() => setScreen("notices")} />
+      <Header screen={screen} onNavigate={setScreen} />
       <div className="flex w-full min-w-0 flex-col items-center text-center">
         <main className="main-width min-w-0 px-0 md:px-3">
           {screen === "notices" ? (
-            <NoticesView onClose={() => setScreen("game")} />
+            <NoticesView />
           ) : (
           <>
           <div className="retro-alert" role="alert">
