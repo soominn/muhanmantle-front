@@ -129,7 +129,7 @@ export default function App() {
           <>
           <div className="retro-alert" role="alert">
             <div className="retro-alert-titlebar">INFO</div>
-            <div className="retro-alert-body">
+            <div className="retro-alert-body info-copy">
               무한맨틀은{" "}
               <a
                 href="https://semantle-ko.newsjel.ly/"
@@ -138,7 +138,9 @@ export default function App() {
               >
                 꼬맨틀
               </a>
-              의 무한 버전입니다. 단어를 입력해 정답을 맞춰보세요.
+              의 무한 버전입니다.{" "}
+              <span className="phone-break" />
+              단어를 입력해 정답을 맞춰보세요.
             </div>
           </div>
 
@@ -150,7 +152,9 @@ export default function App() {
             ) : (
               <>
                 <span className="num-highlight">{Number(answerId).toLocaleString("ko-KR")}</span>
-                &nbsp;번째 정답 단어를 맞춰보세요&nbsp;🚀
+                &nbsp;번째 정답 단어를{" "}
+                <span className="phone-break" />
+                <span className="keep-word">맞춰보세요</span>&nbsp;🚀
               </>
             )}
           </p>

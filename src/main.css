@@ -322,6 +322,27 @@ body {
   -webkit-text-stroke: 0.5px var(--c-text-1);
 }
 
+.phone-break {
+  display: none;
+}
+
+.keep-word {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .phone-break {
+    display: block;
+    height: 0;
+  }
+
+  .game-heading,
+  .info-copy {
+    overflow-wrap: normal;
+    word-break: keep-all;
+  }
+}
+
 .pixel-form {
   display: flex;
   gap: 8px;
