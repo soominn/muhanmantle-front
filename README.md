@@ -4,7 +4,7 @@
 
 React 기반으로 구축된 SPA(Single Page Application)이며,  
 FastText 기반 백엔드 API와 통신하여 게임 플레이 및 시각화를 제공합니다.  
-브라우저 환경에서 유저 인터랙션을 처리하며, 직접 구축한 Nginx 서버를 통해 정적 파일을 서빙하고 있습니다.
+브라우저 환경에서 유저 인터랙션을 처리합니다. 공개 입구는 호스트 Nginx(TLS)이고, 화면 파일은 Podman 컨테이너가 서빙합니다.
 
 🔗 [서비스 바로가기](https://www.muhanmantle.com)  
 🧠 [백엔드 GitHub](https://github.com/soominn/muhanmantle-back)
@@ -16,7 +16,7 @@ FastText 기반 백엔드 API와 통신하여 게임 플레이 및 시각화를 
 - 단어 유사도 게임의 UI와 인터랙션을 담당하는 React 기반 웹 프론트엔드
 - REST API를 활용하여 게임 데이터 송수신
 - 클라이언트 사이드 라우팅 및 상태 관리를 통한 SPA 구조 구현
-- 자체 Nginx 서버를 이용해 정적 파일 배포 및 API 요청 프록시 처리
+- 호스트 Nginx가 TLS와 `/api` 프록시를 맡고, 프론트 컨테이너가 정적 파일을 서빙
 
 ---
 
@@ -28,7 +28,7 @@ FastText 기반 백엔드 API와 통신하여 게임 플레이 및 시각화를 
 | 프레임워크  | React 19 + Vite 7 |
 | 상태 관리   | React hooks (`useGameState`) |
 | 스타일링    | Tailwind CSS 4 |
-| 배포 방식   | Nginx + `dist/` 정적 서빙 |
+| 배포 방식   | Podman 정적 컨테이너 + 호스트 Nginx 리버스 프록시 |
 | API 통신    | fetch (`/api/game`) |
 | 테스트      | Vitest |
 
@@ -55,13 +55,14 @@ FastText 기반 백엔드 API와 통신하여 게임 플레이 및 시각화를 
 
 ## 🖥️ 배포 환경
 
-- **로컬 빌드 후 Nginx로 정적 파일 서빙**
-  - `npm run build` 명령으로 `dist/` 폴더 생성 후, Nginx에서 서빙
-- **프론트와 백엔드 통합 배포 구성**
-  - 정적 파일은 Nginx의 `location /` 설정을 통해 배포됨
-  - API 요청은 `location /api` 설정을 통해 백엔드 서버로 프록시 처리
+- **Podman으로 정적 파일을 서빙**
+  - 이미지가 `npm run build`로 `dist/`를 만들고, 컨테이너 Nginx가 SPA로 서빙
+  - 호스트에는 `127.0.0.1:8090`만 연다 (`FRONT_PORT`로 변경)
+- **호스트 Nginx**
+  - TLS와 공개 입구. `location /`는 프론트 컨테이너로 프록시
+  - `location /api/`는 게임 API(`127.0.0.1:8000`)로 프록시. `config.json`이 `{}`이면 앱은 같은 도메인의 `/api/game`을 호출
 - **도메인 연결**: `muhanmantle.com` 도메인 Route 53 연동
-- **API 주소**: `public/config.json` (`{}`이면 같은 도메인 `/api` 프록시 사용)
+- **이전 절차와 롤백**: [docs/podman-migration.md](docs/podman-migration.md)
 
 ---
 
@@ -109,7 +110,11 @@ muhanmantle-front/
 │   └── main.css
 ├── vite.config.ts
 ├── tsconfig.json
-└── package.json
+├── package.json
+├── Containerfile            # Node 빌드 + Nginx 정적 스테이지
+├── compose.yaml             # podman compose, 127.0.0.1 게시
+├── nginx/default.conf       # SPA fallback, 해시 에셋 캐시
+└── docs/podman-migration.md # 서버 1회 작업, Nginx, 롤백
 ```
 
 ---
