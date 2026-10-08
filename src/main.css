@@ -15,9 +15,6 @@
   font-display: swap;
   src: url("pretendard/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2") format("woff2");
 }
-@import "@fontsource/space-mono/400.css";
-@import "@fontsource/space-mono/700.css";
-
 :root {
   --c-primary: #00ff00;
   --c-surface: #f0f0f0;
@@ -28,7 +25,6 @@
   --radius-sm: 2px;
   --radius-md: 4px;
   --shadow: 4px 4px 0 var(--c-border);
-  --font-mono: "Space Mono", "D2Coding", "Consolas", "Courier New", monospace;
   --font-sans: "Pretendard", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
 }
 
@@ -51,6 +47,8 @@ body {
 .main-width,
 .alert-width {
   width: 52%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 @media (max-width: 991px) {
@@ -68,23 +66,59 @@ body {
 }
 
 .site-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   background: var(--c-bg);
   border-bottom: 2px dashed var(--c-border);
-  padding: 1.25rem 0;
+  padding: 1.25rem 0 1rem;
   margin-bottom: 2.5rem;
+  max-width: 100%;
+}
+
+.site-menu {
+  display: flex;
+  margin-top: 0.65rem;
+  border: 1.5px solid var(--c-text-1);
+  border-radius: var(--radius-sm);
+  box-shadow: 2px 2px 0 var(--c-border);
+  overflow: hidden;
+}
+
+.site-menu button {
+  margin: 0;
+  padding: 3px 12px;
+  border: 0;
+  background: var(--c-surface);
+  color: var(--c-text-1);
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 0.72rem;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.site-menu button + button {
+  border-left: 1.5px solid var(--c-text-1);
+}
+
+.site-menu button.is-active {
+  background: var(--c-primary);
 }
 
 .site-logo {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  max-width: 100%;
+  min-width: 0;
   text-decoration: none;
 }
 
 .site-logo-badge {
   background: var(--c-primary);
   color: var(--c-text-1);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 0.6rem;
   letter-spacing: 0.1em;
@@ -95,7 +129,8 @@ body {
 
 .site-logo-title {
   margin: 0;
-  font-family: var(--font-mono);
+  min-width: 0;
+  font-family: var(--font-sans);
   font-weight: 700;
   font-size: 1.6rem;
   color: var(--c-text-1);
@@ -105,6 +140,76 @@ body {
   color: var(--c-primary);
   text-shadow: 0 0 0 var(--c-text-1), 1px 1px 0 var(--c-text-1);
   -webkit-text-stroke: 0.5px var(--c-text-1);
+}
+
+.notice-body {
+  text-align: left;
+}
+
+.notice-empty {
+  margin: 0;
+}
+
+.notice-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.notice-list button {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.notice-list li {
+  padding: 8px 0;
+  border-bottom: 1px dashed var(--c-border);
+}
+
+.notice-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.notice-list li:last-child button {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.notice-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+  color: var(--c-text-1);
+}
+
+.notice-mark {
+  flex: 0 0 auto;
+  color: var(--c-text-2);
+  letter-spacing: 0;
+}
+
+.notice-panel {
+  margin-top: 0.6rem;
+}
+
+.notice-body p {
+  margin: 0;
+}
+
+.notice-body p + p {
+  margin-top: 0.35rem;
 }
 
 .retro-alert,
@@ -126,7 +231,7 @@ body {
 
 .retro-alert-titlebar,
 .retro-success-titlebar {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -199,6 +304,7 @@ body {
 
 .game-heading {
   display: inline-block;
+  max-width: 100%;
   margin-bottom: 1.4rem;
   padding: 0.6rem 1rem;
   font-family: var(--font-sans);
@@ -208,6 +314,7 @@ body {
   border: 1.5px solid var(--c-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
 }
 
 .num-highlight {
@@ -215,20 +322,50 @@ body {
   -webkit-text-stroke: 0.5px var(--c-text-1);
 }
 
+.phone-break {
+  display: none;
+}
+
+.keep-word {
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .phone-break {
+    display: block;
+    height: 0;
+  }
+
+  .game-heading,
+  .info-copy {
+    overflow-wrap: normal;
+    word-break: keep-all;
+  }
+}
+
 .pixel-form {
   display: flex;
   gap: 8px;
   justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   margin-bottom: 1.5rem;
 }
 
+.pixel-form .btn-pixel {
+  flex-shrink: 0;
+}
+
 .pixel-input {
-  flex: 1;
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
   max-width: 300px;
   padding: 8px 14px;
   border: 1.5px solid var(--c-text-1);
   border-radius: var(--radius-sm);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   color: var(--c-text-1);
   background: var(--c-surface);
   box-shadow: 2px 2px 0 var(--c-border);
@@ -280,12 +417,19 @@ body {
   box-shadow: 3px 3px 0 var(--c-border);
 }
 
+.pixel-table-wrap {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .pixel-table-wrap .table-responsive {
   border: 1.5px solid var(--c-border);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow);
   background: var(--c-surface);
-  overflow: auto;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 .pixel-table {
@@ -314,7 +458,7 @@ body {
 .pixel-table thead th {
   background: var(--c-text-1);
   color: var(--c-surface);
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.7rem;
   padding: 10px 12px;
 }
@@ -324,7 +468,7 @@ body {
 }
 
 .pixel-table tbody td {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   font-size: 0.825rem;
   padding: 9px 12px;
   border-right: 1px dashed var(--c-border);
@@ -337,11 +481,12 @@ body {
 
 .word-cell {
   font-weight: 700;
+  overflow-wrap: anywhere;
 }
 
 .rank-num,
 .site-footer-copy {
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
 }
 
 .sim-progress-wrap {
@@ -363,7 +508,7 @@ body {
 .sim-pct {
   flex: 0 0 3.25rem;
   width: 3.25rem;
-  font-family: var(--font-mono);
+  font-family: var(--font-sans);
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
@@ -423,22 +568,142 @@ body {
   margin: 0;
 }
 
+.revealed-answer {
+  margin: 0;
+  color: var(--c-text-1);
+  font-weight: 700;
+  line-height: 1.5;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.shout-toggle {
+  width: 100%;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.shout-toggle-mark {
+  margin-left: auto;
+  letter-spacing: 0;
+}
+
+.shout-ranking {
+  text-align: left;
+}
+
+.shout-note {
+  margin: 0 0 0.75rem;
+  line-height: 1.45;
+}
+
+.shout-empty {
+  margin: 0;
+}
+
+.shout-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shout-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  padding: 6px 0;
+  border-bottom: 1px dashed var(--c-border);
+}
+
+.shout-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.shout-pos {
+  flex: 0 0 1.5rem;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.shout-word {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: 700;
+  color: var(--c-text-1);
+}
+
+.shout-count {
+  flex: 0 0 auto;
+  color: var(--c-text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.revealed-answer-word {
+  display: inline-block;
+  margin: 0 0.12em;
+  padding: 0.02em 0.28em 0.08em;
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  vertical-align: middle;
+  color: var(--c-text-1);
+  background: var(--c-primary);
+  border: 1.5px solid var(--c-text-1);
+  border-radius: var(--radius-sm);
+  box-shadow: 3px 3px 0 var(--c-text-1);
+}
+
 @media (max-width: 576px) {
+  .pixel-table .col-num {
+    width: 14%;
+  }
+
+  .pixel-table .col-word {
+    width: 30%;
+  }
+
+  .pixel-table .col-sim {
+    width: 32%;
+  }
+
+  .pixel-table .col-rank {
+    width: 24%;
+  }
+
   .pixel-table thead th,
   .pixel-table tbody td {
     font-size: 0.72rem;
-    padding: 8px 6px;
+    padding: 8px 4px;
+  }
+
+  .pixel-table th:first-child,
+  .pixel-table td:first-child {
+    padding-left: 2px;
+    padding-right: 2px;
   }
 
   .sim-pct {
-    flex: 0 0 2.85rem;
-    width: 2.85rem;
+    flex: 0 0 2.6rem;
+    width: 2.6rem;
     font-size: 0.65rem;
   }
 
   .pixel-badge {
     font-size: 0.65rem;
-    padding: 2px 5px;
+    padding: 2px 4px;
+  }
+
+  .pixel-table .rank-cell {
+    min-width: 0;
+    white-space: normal;
+  }
+
+  .site-header {
+    margin-bottom: 1.5rem;
   }
 }
 

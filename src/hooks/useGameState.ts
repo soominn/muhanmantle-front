@@ -2,12 +2,16 @@ import { useState, useEffect, useRef } from "react";
 import { fetchFrontConfig } from "../api/config";
 import {
   fetchGameSession,
+  fetchShoutRanking,
+  postGameGiveUp,
   postGameGuess,
   postGameReset,
 } from "../api/gameSession";
 import { isValidKoreanWord } from "../utils/inputValidation";
 import { sortResults } from "../utils/sorting";
-import type { GuessResult } from "../types/game";
+import type { GuessResult, RevealedAnswer, ShoutRankingItem } from "../types/game";
+
+export type ShoutRankingStatus = "idle" | "loading" | "ready" | "error";
 
 export interface GameState {
   answerId: number | null;
@@ -18,8 +22,14 @@ export interface GameState {
   hasError: boolean;
   isDuplicate: boolean;
   isSessionReady: boolean;
+  isGivingUp: boolean;
+  revealedAnswer: RevealedAnswer | null;
+  shoutRanking: ShoutRankingItem[];
+  shoutRankingStatus: ShoutRankingStatus;
+  loadShoutRanking: () => void;
   setInputValue: (v: string) => void;
   submitGuess: () => Promise<void>;
+  giveUp: () => Promise<void>;
   resetGame: () => Promise<void>;
 }
 
@@ -33,10 +43,17 @@ export function useGameState(): GameState {
   const [hasError, setHasError] = useState(false);
   const [isDuplicate, setIsDuplicate] = useState(false);
   const [isSessionReady, setIsSessionReady] = useState(false);
+  const [isGivingUp, setIsGivingUp] = useState(false);
+  const [revealedAnswer, setRevealedAnswer] = useState<RevealedAnswer | null>(null);
+  const [shoutRanking, setShoutRanking] = useState<ShoutRankingItem[]>([]);
+  const [shoutRankingStatus, setShoutRankingStatus] = useState<ShoutRankingStatus>("idle");
 
   const isSubmitting = useRef(false);
+  const isGivingUpRef = useRef(false);
   const guessesRef = useRef<GuessResult[]>(guesses);
   const gameBaseRef = useRef(gameBase);
+  const shoutWantedRef = useRef(false);
+  const shoutStatusRef = useRef<ShoutRankingStatus>("idle");
 
   useEffect(() => {
     guessesRef.current = guesses;
@@ -44,6 +61,20 @@ export function useGameState(): GameState {
   useEffect(() => {
     gameBaseRef.current = gameBase;
   }, [gameBase]);
+
+  function applySession(data: {
+    answer_id: number | null;
+    guesses?: GuessResult[];
+    is_correct: boolean;
+    correct_attempt_count?: number;
+  }) {
+    setAnswerId(data.answer_id ?? null);
+    const sorted = sortResults(data.guesses ?? []);
+    setGuesses(sorted);
+    guessesRef.current = sorted;
+    setIsCorrect(data.is_correct);
+    setCorrectAttemptCount(data.correct_attempt_count ?? 0);
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -58,12 +89,7 @@ export function useGameState(): GameState {
       })
       .then((session) => {
         if (cancelled || !session) return;
-        setAnswerId(session.answer_id ?? null);
-        const sorted = sortResults(session.guesses ?? []);
-        setGuesses(sorted);
-        guessesRef.current = sorted;
-        setIsCorrect(session.is_correct);
-        setCorrectAttemptCount(session.correct_attempt_count ?? 0);
+        applySession(session);
         setIsSessionReady(true);
       })
       .catch((err) => {
@@ -74,6 +100,33 @@ export function useGameState(): GameState {
       cancelled = true;
     };
   }, []);
+
+  const loadShoutRanking = () => {
+    shoutWantedRef.current = true;
+    const base = gameBaseRef.current;
+    if (!base) return;
+    if (shoutStatusRef.current === "loading" || shoutStatusRef.current === "ready") return;
+
+    shoutStatusRef.current = "loading";
+    setShoutRankingStatus("loading");
+    fetchShoutRanking(base)
+      .then((data) => {
+        const items = [...(data.items ?? [])].sort((a, b) => b.count - a.count);
+        setShoutRanking(items);
+        shoutStatusRef.current = "ready";
+        setShoutRankingStatus("ready");
+      })
+      .catch((err) => {
+        console.error("외침 순위 조회 실패:", err);
+        setShoutRanking([]);
+        shoutStatusRef.current = "error";
+        setShoutRankingStatus("error");
+      });
+  };
+
+  useEffect(() => {
+    if (gameBase && shoutWantedRef.current) loadShoutRanking();
+  }, [gameBase]);
 
   const submitGuess = async (): Promise<void> => {
     const base = gameBaseRef.current;
@@ -93,12 +146,7 @@ export function useGameState(): GameState {
       const data = await postGameGuess(base, word);
       setHasError(false);
 
-      const sorted = sortResults(data.guesses ?? []);
-      setGuesses(sorted);
-      guessesRef.current = sorted;
-      setAnswerId(data.answer_id ?? null);
-      setIsCorrect(data.is_correct);
-      setCorrectAttemptCount(data.correct_attempt_count ?? 0);
+      applySession(data);
 
       if (data.duplicate) {
         setIsDuplicate(true);
@@ -117,18 +165,39 @@ export function useGameState(): GameState {
     }
   };
 
+  const giveUp = async (): Promise<void> => {
+    const base = gameBaseRef.current;
+    if (!base || !isSessionReady || isGivingUpRef.current) return;
+
+    isGivingUpRef.current = true;
+    setIsGivingUp(true);
+    try {
+      const data = await postGameGiveUp(base);
+      applySession(data);
+      const revealed = data.revealed_answer;
+      if (
+        revealed &&
+        typeof revealed.number === "number" &&
+        typeof revealed.word === "string"
+      ) {
+        setRevealedAnswer({ number: revealed.number, word: revealed.word });
+      }
+    } catch (err) {
+      console.error("포기 실패:", err);
+    } finally {
+      isGivingUpRef.current = false;
+      setIsGivingUp(false);
+    }
+  };
+
   const resetGame = async (): Promise<void> => {
     const base = gameBaseRef.current;
     if (!base || !isSessionReady) return;
 
     try {
       const data = await postGameReset(base);
-      setAnswerId(data.answer_id ?? null);
-      const emptySorted = sortResults(data.guesses ?? []);
-      setGuesses(emptySorted);
-      guessesRef.current = emptySorted;
-      setIsCorrect(data.is_correct);
-      setCorrectAttemptCount(data.correct_attempt_count ?? 0);
+      applySession(data);
+      setRevealedAnswer(null);
       setHasError(false);
       setIsDuplicate(false);
     } catch (err) {
@@ -145,8 +214,14 @@ export function useGameState(): GameState {
     hasError,
     isDuplicate,
     isSessionReady,
+    isGivingUp,
+    revealedAnswer,
+    shoutRanking,
+    shoutRankingStatus,
+    loadShoutRanking,
     setInputValue,
     submitGuess,
+    giveUp,
     resetGame,
   };
 }

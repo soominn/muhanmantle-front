@@ -5,6 +5,7 @@ export interface GuessResult {
   similarity: number;
   /** @deprecated Old sessions only (was cosine×100, often truncated with int). */
   similarityPct?: number;
+  rank: number | string;
 }
 
 export interface SimilarityApiResponse {
@@ -30,4 +31,24 @@ export interface GameSessionResponse {
 
 export interface GameGuessResponse extends GameSessionResponse {
   duplicate: boolean;
+}
+
+/** POST /api/game/session/give-up */
+export interface RevealedAnswer {
+  number: number;
+  word: string;
+}
+
+export interface GameGiveUpResponse extends GameSessionResponse {
+  revealed_answer: RevealedAnswer;
+}
+
+/** GET /api/game/shout-ranking — global counts, not the current puzzle. */
+export interface ShoutRankingItem {
+  word: string;
+  count: number;
+}
+
+export interface ShoutRankingResponse {
+  items: ShoutRankingItem[];
 }
