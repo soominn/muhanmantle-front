@@ -3,50 +3,129 @@ name: Deploy Frontend
 on:
   push:
     branches:
-      - main  # 배포할 브랜치 명으로 수정 가능
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: muhanmantle-front-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  test:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install, test, and build
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
       - name: Deploy to Lightsail
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
+          command_timeout: 20m
+          script_stop: true
           script: |
             set -euo pipefail
 
-            echo "🚀 프론트엔드 배포 시작!"
+            echo "프론트엔드 컨테이너 배포 시작"
 
-            export NVM_DIR="$HOME/.nvm"
-            if [ -s "$NVM_DIR/nvm.sh" ]; then
-              # non-interactive SSH에서는 .bashrc의 nvm이 로드되지 않을 수 있음
-              . "$NVM_DIR/nvm.sh"
-              nvm use 22
-            else
-              echo "❌ nvm not found at $NVM_DIR — install Node 22+ on the server"
+            export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-/run/user/$(id -u)}"
+            if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+              echo "XDG_RUNTIME_DIR이 없습니다. docs/podman-migration.md 의 linger 설정을 먼저 하세요."
               exit 1
             fi
 
-            node -v
-            npm -v
+            if ! command -v podman >/dev/null 2>&1; then
+              echo "podman이 없습니다. docs/podman-migration.md 의 1회 설치를 먼저 하세요."
+              exit 1
+            fi
+            if ! command -v curl >/dev/null 2>&1; then
+              echo "curl이 없습니다."
+              exit 1
+            fi
 
             cd ~/projects/muhanmantle-front
-            git pull origin main
-            npm install
-            npm run build
+            git pull --ff-only origin main
 
-            # Nginx용 정적 파일 덮어쓰기 (Vite → dist/)
-            sudo rm -rf /var/www/muhanmantle-front/*
-            sudo cp -r dist/* /var/www/muhanmantle-front/
+            FRONT_PORT=8090
+            if [ -f .env ]; then
+              line=$(grep -E '^[[:space:]]*(export[[:space:]]+)?FRONT_PORT=' .env | tail -n1 || true)
+              if [ -n "$line" ]; then
+                value=${line#*=}
+                value=${value%%#*}
+                value=$(printf '%s' "$value" | tr -d '[:space:]"'"'"'')
+                if [ -n "$value" ]; then
+                  FRONT_PORT=$value
+                fi
+              fi
+            fi
+            case "$FRONT_PORT" in
+              ''|*[!0-9]*)
+                echo "FRONT_PORT가 숫자가 아닙니다: ${FRONT_PORT}"
+                exit 1
+                ;;
+            esac
+            export FRONT_PORT
 
-            # Nginx 리로드
-            sudo systemctl reload nginx
+            if podman compose version >/dev/null 2>&1; then
+              compose() { podman compose "$@"; }
+            elif command -v podman-compose >/dev/null 2>&1; then
+              compose() { podman-compose "$@"; }
+            else
+              echo "podman compose 또는 podman-compose 가 필요합니다."
+              exit 1
+            fi
 
-            echo "✅ 프론트 배포 완료!"
+            compose up -d --build --force-recreate
+
+            ok=0
+            for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+              if curl -fsS "http://127.0.0.1:${FRONT_PORT}/healthz" >/dev/null; then
+                ok=1
+                break
+              fi
+              sleep 1
+            done
+            if [ "$ok" -ne 1 ]; then
+              echo "healthz 실패: http://127.0.0.1:${FRONT_PORT}/healthz"
+              podman logs muhanmantle-front || true
+              exit 1
+            fi
+
+            tmp=$(mktemp)
+            trap 'rm -f "$tmp"' EXIT
+
+            curl -fsS -o "$tmp" "http://127.0.0.1:${FRONT_PORT}/"
+            grep -q 'id="root"' "$tmp"
+
+            curl -fsS -o "$tmp" "http://127.0.0.1:${FRONT_PORT}/__spa_fallback_check__"
+            grep -q 'id="root"' "$tmp"
+
+            asset_code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:${FRONT_PORT}/assets/__missing__.js")
+            if [ "$asset_code" != "404" ]; then
+              echo "해시 에셋이 없을 때 404가 아닙니다: ${asset_code}"
+              exit 1
+            fi
+
+            echo "프론트 배포 완료 (127.0.0.1:${FRONT_PORT})"

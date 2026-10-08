@@ -1,0 +1,26 @@
+# podman compose / podman-compose
+# 공개 포트는 없다. 호스트 Nginx만 이 포트로 프록시한다.
+#
+# 이미 쓰는 포트: 80/443 호스트 Nginx, 8000 게임 API, 3306 MariaDB.
+# 바꾸려면 프로젝트 루트 .env 에 FRONT_PORT=숫자를 둔다 (.env.example 참고).
+
+name: muhanmantle-front
+
+services:
+  front:
+    build:
+      context: .
+      dockerfile: Containerfile
+    image: muhanmantle-front:latest
+    container_name: muhanmantle-front
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FRONT_PORT:-8090}:80"
+    # 이미지 OCI 포맷은 HEALTHCHECK 를 버리므로 compose 에서 건다.
+    # 배포 잡은 이와 별도로 호스트 curl 로 확인한다.
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/healthz"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
