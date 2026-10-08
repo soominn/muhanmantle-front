@@ -568,6 +568,10 @@ body {
   margin: 0;
 }
 
+.give-up-result {
+  scroll-margin-top: 1.25rem;
+}
+
 .revealed-answer {
   margin: 0;
   color: var(--c-text-1);

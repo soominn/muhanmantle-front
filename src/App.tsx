@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -11,6 +11,24 @@ import { revealedAnswerParts } from "./utils/revealedAnswer";
 
 const SHOUT_RANKING_NOTE =
   "모든 퍼즐에서 사람들이 제출한 단어를 센 순위입니다. 같은 사람이 같은 단어를 여러 번 쳐도 한 번만 셉니다.";
+
+const GIVE_UP_SCROLL_MARGIN_PX = 20;
+
+function scrollGiveUpSectionIntoView(section: HTMLElement) {
+  const header = document.querySelector(".site-header");
+  if (header instanceof HTMLElement) {
+    const position = getComputedStyle(header).position;
+    if (position === "sticky" || position === "fixed") {
+      const offset = header.getBoundingClientRect().height + GIVE_UP_SCROLL_MARGIN_PX;
+      section.style.scrollMarginTop = `${offset}px`;
+    }
+  }
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  section.scrollIntoView({
+    behavior: reduceMotion ? "auto" : "smooth",
+    block: "start",
+  });
+}
 
 function ShoutRanking({
   items,
@@ -90,6 +108,20 @@ export default function App() {
     resetGame,
   } = useGameState();
   const [screen, setScreen] = useState<"game" | "notices">("game");
+  const giveUpSectionRef = useRef<HTMLDivElement>(null);
+  // Set only when the user confirms 포기하기, so a restored reveal does not scroll.
+  const giveUpScrollArmed = useRef(false);
+
+  useEffect(() => {
+    if (!giveUpScrollArmed.current || isGivingUp) return;
+    const section = giveUpSectionRef.current;
+    if (!section) {
+      giveUpScrollArmed.current = false;
+      return;
+    }
+    giveUpScrollArmed.current = false;
+    scrollGiveUpSectionIntoView(section);
+  }, [revealedAnswer, isGivingUp]);
 
   const placeholder = hasError
     ? "사용할 수 없는 단어입니다."
@@ -106,6 +138,7 @@ export default function App() {
 
   function handleGiveUp() {
     if (window.confirm("포기하시겠습니까?")) {
+      giveUpScrollArmed.current = true;
       void giveUp();
     }
   }
@@ -179,7 +212,11 @@ export default function App() {
           </div>
 
           {revealedAnswer && (
-            <div className="retro-alert alert-width mx-auto mb-4" role="status">
+            <div
+              ref={giveUpSectionRef}
+              className="retro-alert alert-width give-up-result mx-auto mb-4"
+              role="status"
+            >
               <div className="retro-alert-titlebar">GIVE UP</div>
               <div className="retro-alert-body">
                 <p className="revealed-answer">
